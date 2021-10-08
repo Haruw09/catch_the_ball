@@ -24,13 +24,14 @@ def new_ball():
     color = COLORS[randint(0, 5)]
     circle(screen, color, (x, y), r)
 
-def position(x, y):
+def points_num(x, y):
+    global points
     pos = pygame.mouse.get_pos()
     x1 = pos[0]
     x2 = pos[1]
     if (x1 - x) ** 2 + (y1 - y) ** 2 < r ** 2:
-        return True
-    return False
+        points += 1
+    return points
 
 pygame.display.update()
 clock = pygame.time.Clock()
@@ -42,9 +43,7 @@ while not finished:
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if position(x, y):
-                points += 1
-            print(points)
+            print(points_num(x, y))
                 
             
     new_ball()
