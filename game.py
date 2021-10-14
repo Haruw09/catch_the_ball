@@ -1,54 +1,105 @@
 import pygame
-from pygame.draw import *
+import pygame.draw
 from random import randint
 pygame.init()
+font = pygame.font.SysFont('arial', 50)
+FPS = 50
+width = 1000
+length = 500
+# создание дисплея
+screen = pygame.display.set_mode((width, length))
+name = input('Your name: ')
 
-FPS = 1
-screen = pygame.display.set_mode((1200, 900))
-points = 0
-
-RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-GREEN = (0, 255, 0)
-MAGENTA = (255, 0, 255)
-CYAN = (0, 255, 255)
-BLACK = (0, 0, 0)
-COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN]
+WHITE = (255, 255, 255)
 
-def new_ball():
-    global x, y, r
-    x = randint(100,700)
-    y = randint(100,500)
-    r = randint(30,50)
-    color = COLORS[randint(0, 5)]
-    circle(screen, color, (x, y), r)
+# класс из функций, создающих шарики
+class Balls(pygame.sprite.Sprite):
+  # создает шары и их исходное состояние
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        if randint(0, 1) == 0:
+            self.image = pygame.image.load('ball1.png')
+            self.coefficient = 2
+        else:
+            self.image = pygame.image.load('ball2.png')
+            self.coefficient = 1            
+        self.rect = self.image.get_rect()
+        self.rect.x = randint(100, width)
+        self.rect.y = randint(100, length)
+        self.scal = randint(40, 60)
+        self.image = pygame.transform.scale(self.image, (self.scal, self.scal))
+        self.v_x = randint(-3, 3)
+        self.v_y = randint(-3, 3)
+    
+    # движение с отраженим от стен
+    def update(self):
+        if self.rect.x + self.v_x <= 0 or self.rect.x + self.v_x >= width - self.scal:
+            self.v_x = -self.v_x
+        if self.rect.y + self.v_y <= 0 or self.rect.y + self.v_y >= length - self.scal:
+            self.v_y = -self.v_y
+        self.rect.x += self.v_x
+        self.rect.y += self.v_y
+        if(randint(1, 40) == 1):
+            self.kill
+    
+    # определяет, попал ли пользователь по шару
+    def condition_of_being_cought(self, coords):
+        x_m = coords[0]
+        y_m = coords[1] 
+        if x_m >= self.rect.x and x_m <= self.rect.x + self.scal:
+            condition_x = True
+        else:
+            condition_x = False
+        if self.rect.y <= y_m and self.rect.y + self.scal >= y_m:
+            condition_y = True
+        else:
+            condition_y = False
+        if  condition_x and condition_y:
+            return True
+        else:
+            return False
+    
+# выводит очки пользователя на экран
+def score(Score):
+    text = font.render("Score: " + str(Score), True, BLUE)
+    screen.blit(text, (100, 100))
 
-def points_num(x, y):
-    global points
-    pos = pygame.mouse.get_pos()
-    x1 = pos[0]
-    x2 = pos[1]
-    if (x1 - x) ** 2 + (y1 - y) ** 2 < r ** 2:
-        points += 1
-    return points
 
-pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
+Score = 0 
+ball_class = Balls() 
+ball = pygame.sprite.Group()
+ball.add(ball_class)
+ball.update()
+pygame.display.flip()
+
 
 while not finished:
     clock.tick(FPS)
+    screen.fill(WHITE)
+    score(Score)
+    ball.update()
+    ball.draw(screen)
+    pygame.display.flip()
+    if randint(1, 60) == 1:
+        ball_class = Balls()
+        ball.add(ball_class)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            print(points_num(x, y))
-                
-            
-    new_ball()
-    pygame.display.update()
-    screen.fill(BLACK)
-    
+            for i in ball:
+                if i.condition_of_being_cought(event.pos):
+                    if i.coefficient == 2:
+                        Score += 1
+                    elif i.coefficient == 1: 
+                        Score += 5
+                    i.kill()
+
+# выведем счет игрока в файл                
+file = open("out.txt", "a")
+file.write('Name:' + name + ': ' + str(Score) + '\n')
     
 pygame.quit()
