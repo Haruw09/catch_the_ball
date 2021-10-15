@@ -81,17 +81,19 @@ ball.update()
 pygame.display.flip()
 
 
-# обновление экрана, добавление шаров,их удаление (если пользователь на них кликает)
 while not finished:
+    # обновление экрана, изменение движения шаров и их удаление (если нужно)
     clock.tick(FPS)
     screen.fill(WHITE)
     score(Score)
     ball.update()
     ball.draw(screen)
     pygame.display.flip()
+    # добавление шаров
     if randint(1, 60) == 1:
         ball_class = Balls()
         ball.add(ball_class)
+    # проверка, попал ли пользователь по шару, начисление очков и удаление "кликнутых" шариков
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
