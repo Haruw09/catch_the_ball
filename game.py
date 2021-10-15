@@ -107,7 +107,7 @@ while not finished:
                     i.kill()
 
 # выведем счет игрока в файл                
-file = open("out.txt", "a")
-file.write('Name:' + name + ': ' + str(Score) + '\n')
+output = open('out.txt', 'w')
+print('Name:' + name + ': ' + str(Score) + '\n', file = output)
     
 pygame.quit()
