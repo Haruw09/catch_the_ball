@@ -13,12 +13,13 @@ max_ball_size = 150
 screen = pygame.display.set_mode((width, length))
 name = input('Your name: ')
 
+# цвета текста и фона соответственно
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
 # класс из функций, создающих шарики
 class Balls(pygame.sprite.Sprite):
-  # создает шары и их исходное состояние
+  # импортит спрайты шаров из файлов
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         if randint(0, 1) == 0:
@@ -26,7 +27,8 @@ class Balls(pygame.sprite.Sprite):
             self.coefficient = 2
         else:
             self.image = pygame.image.load('ball2.png')
-            self.coefficient = 1            
+            self.coefficient = 1
+        # задает начальные координаты шаров и их скорости, а также сжимает спрайты до нужных размеров
         self.rect = self.image.get_rect()
         self.rect.x = randint(max_ball_size, width - max_ball_size)
         self.rect.y = randint(max_ball_size, length - max_ball_size)
@@ -35,7 +37,7 @@ class Balls(pygame.sprite.Sprite):
         self.v_x = randint(-3, 3)
         self.v_y = randint(-3, 3)
     
-    # движение с отраженим от стен
+    # движение с отраженим от стен, стирание шаров (на которые не кликает пользователь)
     def update(self):
         if self.rect.x + self.v_x <= 0 or self.rect.x + self.v_x >= width - self.scal:
             self.v_x = -self.v_x
@@ -68,7 +70,7 @@ def score(Score):
     text = font.render("Score: " + str(Score), True, BLUE)
     screen.blit(text, (100, 100))
 
-
+    
 clock = pygame.time.Clock()
 finished = False
 Score = 0 
@@ -79,6 +81,7 @@ ball.update()
 pygame.display.flip()
 
 
+# обновление экрана, добавление шаров,их удаление (если пользователь на них кликает)
 while not finished:
     clock.tick(FPS)
     screen.fill(WHITE)
