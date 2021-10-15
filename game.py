@@ -6,6 +6,9 @@ font = pygame.font.SysFont('arial', 50)
 FPS = 50
 width = 1000
 length = 500
+min_ball_size = 50
+max_ball_size = 150
+
 # создание дисплея
 screen = pygame.display.set_mode((width, length))
 name = input('Your name: ')
@@ -25,9 +28,9 @@ class Balls(pygame.sprite.Sprite):
             self.image = pygame.image.load('ball2.png')
             self.coefficient = 1            
         self.rect = self.image.get_rect()
-        self.rect.x = randint(100, width)
-        self.rect.y = randint(100, length)
-        self.scal = randint(40, 60)
+        self.rect.x = randint(max_ball_size, width - max_ball_size)
+        self.rect.y = randint(max_ball_size, length - max_ball_size)
+        self.scal = randint(min_ball_size, max_ball_size)
         self.image = pygame.transform.scale(self.image, (self.scal, self.scal))
         self.v_x = randint(-3, 3)
         self.v_y = randint(-3, 3)
